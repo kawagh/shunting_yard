@@ -1,9 +1,23 @@
+use std::collections::HashMap;
 fn shunting_yard(input: &str) -> Vec<char> {
+    let operators = vec!['+', '-', '*', '/'];
+    let precedences = vec![0, 0, 1, 1];
+    let precedences_map: HashMap<_, _> = operators.iter().zip(precedences.iter()).collect();
     let mut operator_stack: Vec<char> = Vec::new();
     let mut rpn_stack: Vec<char> = Vec::new();
     for ch in input.chars() {
         match ch {
-            '+' | '-' | '*' | '/' => operator_stack.push(ch),
+            '+' | '-' | '*' | '/' => {
+                while let Some(stack_top) = operator_stack.last() {
+                    if precedences_map[stack_top] >= precedences_map[&ch] {
+                        let stack_top = operator_stack.pop().unwrap();
+                        rpn_stack.push(stack_top);
+                    } else {
+                        break;
+                    }
+                }
+                operator_stack.push(ch);
+            }
             '1'..='9' => rpn_stack.push(ch),
             _ => panic!("unexpected character"),
         }
@@ -47,6 +61,20 @@ mod tests {
     fn accept_operators() {
         let input = "1*2";
         let expected = vec!['1', '2', '*'];
+        assert_eq!(expected, shunting_yard(input));
+    }
+
+    #[test]
+    fn one_char_with_precedence() {
+        let input = "1*2+3";
+        let expected = vec!['1', '2', '*', '3', '+'];
+        assert_eq!(expected, shunting_yard(input));
+    }
+
+    #[test]
+    fn one_char_with_precedence2() {
+        let input = "1+2*3";
+        let expected = vec!['1', '2', '3', '*', '+'];
         assert_eq!(expected, shunting_yard(input));
     }
 }
