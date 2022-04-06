@@ -41,13 +41,15 @@ mod tests {
     #[test]
     fn one_char_case() {
         let input = "1+2";
-        assert_eq!(shunting_yard(input), vec!['1', '2', '+']);
+        let expected = vec!['1', '2', '+'];
+        assert_eq!(expected, shunting_yard(input));
     }
 
     #[test]
     fn one_char_case2() {
         let input = "1+2+3";
-        assert_eq!(shunting_yard(input), vec!['1', '2', '3', '+', '+']);
+        let expected = vec!['1', '2', '+', '3', '+'];
+        assert_eq!(expected, shunting_yard(input));
     }
 
     #[test]
