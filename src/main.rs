@@ -3,7 +3,7 @@ fn shunting_yard(input: &str) -> Vec<char> {
     let mut rpn_stack: Vec<char> = Vec::new();
     for ch in input.chars() {
         match ch {
-            '+' => operator_stack.push(ch),
+            '+' | '-' | '*' | '/' => operator_stack.push(ch),
             '1'..='9' => rpn_stack.push(ch),
             _ => panic!("unexpected character"),
         }
@@ -41,5 +41,12 @@ mod tests {
     fn unexpected_token() {
         let input = "1~2";
         shunting_yard(input);
+    }
+
+    #[test]
+    fn accept_operators() {
+        let input = "1*2";
+        let expected = vec!['1', '2', '*'];
+        assert_eq!(expected, shunting_yard(input));
     }
 }
