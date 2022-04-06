@@ -4,28 +4,28 @@ fn shunting_yard(input: &str) -> Vec<char> {
     let precedences = vec![0, 0, 1, 1];
     let precedences_map: HashMap<_, _> = operators.iter().zip(precedences.iter()).collect();
     let mut operator_stack: Vec<char> = Vec::new();
-    let mut rpn_stack: Vec<char> = Vec::new();
+    let mut rpn_tokens: Vec<char> = Vec::new();
     for ch in input.chars() {
         match ch {
             '+' | '-' | '*' | '/' => {
                 while let Some(stack_top) = operator_stack.last() {
                     if precedences_map[stack_top] >= precedences_map[&ch] {
                         let stack_top = operator_stack.pop().unwrap();
-                        rpn_stack.push(stack_top);
+                        rpn_tokens.push(stack_top);
                     } else {
                         break;
                     }
                 }
                 operator_stack.push(ch);
             }
-            '1'..='9' => rpn_stack.push(ch),
+            '1'..='9' => rpn_tokens.push(ch),
             _ => panic!("unexpected character"),
         }
     }
     while let Some(ch) = operator_stack.pop() {
-        rpn_stack.push(ch);
+        rpn_tokens.push(ch);
     }
-    rpn_stack
+    rpn_tokens
 }
 
 fn main() {
