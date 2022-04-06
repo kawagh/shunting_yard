@@ -4,7 +4,8 @@ fn shunting_yard(input: &str) -> Vec<char> {
     for ch in input.chars() {
         match ch {
             '+' => operator_stack.push(ch),
-            num => rpn_stack.push(num),
+            '1'..='9' => rpn_stack.push(ch),
+            _ => panic!("unexpected character"),
         }
     }
     while let Some(ch) = operator_stack.pop() {
@@ -33,5 +34,12 @@ mod tests {
     fn one_char_case2() {
         let input = "1+2+3";
         assert_eq!(shunting_yard(input), vec!['1', '2', '3', '+', '+']);
+    }
+
+    #[test]
+    #[should_panic]
+    fn unexpected_token() {
+        let input = "1~2";
+        shunting_yard(input);
     }
 }
