@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 fn shunting_yard(input: &str) -> Vec<char> {
-    let operators = vec!['+', '-', '*', '/'];
-    let precedences = vec![0, 0, 1, 1];
+    let operators = vec!['+', '-', '*', '/', '(', ')'];
+    let precedences = vec![0, 0, 1, 1, -1, -1];
     let precedences_map: HashMap<_, _> = operators.iter().zip(precedences.iter()).collect();
     let mut operator_stack: Vec<char> = Vec::new();
     let mut rpn_tokens: Vec<char> = Vec::new();
@@ -17,6 +17,16 @@ fn shunting_yard(input: &str) -> Vec<char> {
                     }
                 }
                 operator_stack.push(ch);
+            }
+            '(' => operator_stack.push(ch),
+            ')' => {
+                while let Some(stack_top) = operator_stack.last() {
+                    if stack_top == &'(' {
+                        operator_stack.pop();
+                        break;
+                    }
+                    rpn_tokens.push(operator_stack.pop().unwrap());
+                }
             }
             '1'..='9' => rpn_tokens.push(ch),
             _ => panic!("unexpected character"),
@@ -77,6 +87,13 @@ mod tests {
     fn one_char_with_precedence2() {
         let input = "1+2*3";
         let expected = vec!['1', '2', '3', '*', '+'];
+        assert_eq!(expected, shunting_yard(input));
+    }
+
+    #[test]
+    fn with_parentheses() {
+        let input = "(1+2)*3";
+        let expected = vec!['1', '2', '+', '3', '*'];
         assert_eq!(expected, shunting_yard(input));
     }
 }
